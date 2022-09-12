@@ -11,7 +11,7 @@ import SwiftUI
 struct ios_edit_labelApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Homepage()
         }
     }
 }

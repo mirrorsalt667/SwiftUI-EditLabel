@@ -11,6 +11,7 @@
 		0663DD3628CEBC1B004F9A79 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0663DD3528CEBC1B004F9A79 /* ContentView.swift */; };
 		0663DD3828CEBC1C004F9A79 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0663DD3728CEBC1C004F9A79 /* Assets.xcassets */; };
 		0663DD3B28CEBC1C004F9A79 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0663DD3A28CEBC1C004F9A79 /* Preview Assets.xcassets */; };
+		0663DD4428CEFDF9004F9A79 /* Homepage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0663DD4328CEFDF9004F9A79 /* Homepage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		0663DD3528CEBC1B004F9A79 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		0663DD3728CEBC1C004F9A79 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0663DD3A28CEBC1C004F9A79 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0663DD4328CEFDF9004F9A79 /* Homepage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Homepage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +53,7 @@
 		0663DD3228CEBC1B004F9A79 /* ios_edit_label */ = {
 			isa = PBXGroup;
 			children = (
+				0663DD4328CEFDF9004F9A79 /* Homepage.swift */,
 				0663DD3328CEBC1B004F9A79 /* ios_edit_labelApp.swift */,
 				0663DD3528CEBC1B004F9A79 /* ContentView.swift */,
 				0663DD3728CEBC1C004F9A79 /* Assets.xcassets */,
@@ -137,6 +140,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0663DD4428CEFDF9004F9A79 /* Homepage.swift in Sources */,
 				0663DD3628CEBC1B004F9A79 /* ContentView.swift in Sources */,
 				0663DD3428CEBC1B004F9A79 /* ios_edit_labelApp.swift in Sources */,
 			);
