@@ -15,7 +15,7 @@ struct Homepage: View {
     GridItem(.fixed(150)),
     GridItem(.fixed(150)),
   ]
-  private var mSymbols = ["moon.fill", "camera", "circle.fill", "pencil", "square.fill", "moon", "arrow.right", "circle", "square"]
+  private var mSymbols = ["list.bullet.rectangle", "camera", "circle.fill", "pencil", "square.fill", "moon", "arrow.right", "circle", "square"]
   
   var body: some View {
     // 取得上、下安全範圍的高度
@@ -43,7 +43,7 @@ struct Homepage: View {
                 switch index {
                 case 0:
                   NavigationLink {
-                    ContentView()
+                    EditLabelPage()
                   } label: {
                     Image(systemName: mSymbols[index])
                       .font(.system(size: 40, weight: .medium, design: .rounded))
@@ -68,6 +68,14 @@ struct Homepage: View {
                 case 3:
                   NavigationLink {
                     ContentView()
+                  } label: {
+                    Image(systemName: mSymbols[index])
+                      .font(.system(size: 40, weight: .medium, design: .rounded))
+                      .foregroundColor(.white)
+                  }
+                case 4:
+                  NavigationLink {
+                    CreateTimeText(finalDate: .constant("1"), popBool: .constant(true))
                   } label: {
                     Image(systemName: mSymbols[index])
                       .font(.system(size: 40, weight: .medium, design: .rounded))
