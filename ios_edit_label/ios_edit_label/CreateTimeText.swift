@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct CreateTimeText: View {
-  
-//  @Environment(\.presentationMode) var pushMode
+  @Environment(\.presentationMode) var pushMode
   @Binding var finalDate: String
-  @Binding var popBool: Bool
-  
+//  @Binding var popBool: Bool
+
   struct TimeFormat {
+    let title: String
     let frontDateFormat: String
     let hourFormat: String
   }
 
-  private let translateFormat: [TimeFormat] = [TimeFormat(frontDateFormat: "yyyy-MM-dd", hourFormat: "HH:mm"), TimeFormat(frontDateFormat: "yyyy-MM-dd", hourFormat: ""), TimeFormat(frontDateFormat: "MM-dd", hourFormat: "HH:mm"), TimeFormat(frontDateFormat: "MM-dd", hourFormat: ""), TimeFormat(frontDateFormat: "", hourFormat: "HH:mm")]
-  @State private var selectedFormat = TimeFormat(frontDateFormat: "yyyy-MM-dd", hourFormat: "HH:mm")
+  private let translateFormat: [TimeFormat] = [TimeFormat(title: "年-月-日 時:分", frontDateFormat: "yyyy-MM-dd", hourFormat: "HH:mm"), TimeFormat(title: "年-月-日", frontDateFormat: "yyyy-MM-dd", hourFormat: ""), TimeFormat(title: "月-日 時:分", frontDateFormat: "MM-dd", hourFormat: "HH:mm"), TimeFormat(title: "月-日", frontDateFormat: "MM-dd", hourFormat: ""), TimeFormat(title: "時:分", frontDateFormat: "", hourFormat: "HH:mm")]
+  @State private var selectedFormat = TimeFormat(title: "年-月-日 時:分", frontDateFormat: "yyyy-MM-dd", hourFormat: "HH:mm")
   @State private var selectedDate = Date()
   @State private var selectedHour = Date()
 
@@ -29,7 +29,7 @@ struct CreateTimeText: View {
     let bottomSafeAreaHeight = getSafeAreaBottom()
     let navigationHeght: CGFloat = 50 // 暫定為50
 
-    VStack {
+    VStack(spacing: 0) {
       // safe area 填入黑色
       Color.black
         .frame(height: topSafeAreaHeight + navigationHeght)
@@ -37,19 +37,23 @@ struct CreateTimeText: View {
         Color.black.frame(width: 15)
         Color.white
           .overlay(
-            VStack {
-              Text("預覽").frame(height: 30)
+//            VStack {
+//              Text("預覽")
               Text(changeDateFormat(format: selectedFormat, inputDate: selectedDate, inputHour: selectedHour))
                 .foregroundColor(.black)
                 .font(Font.system(size: 24, weight: .regular, design: .default))
-            }
+//            }
           )
         Color.black.frame(width: 15)
       }
-      VStack(spacing: 10) {
-        Text("請選擇日期")
-          .foregroundColor(Color("TiffanyBlue"))
-          .padding(.top, 10)
+      VStack(spacing: 5) {
+        HStack {
+          Text("請選擇日期")
+            .foregroundColor(Color("TiffanyBlue"))
+            .padding(.top, 10)
+            .padding(.leading, 10)
+          Spacer()
+        }
         VStack(spacing: 0) {
           DatePicker("time picker", selection: $selectedDate, displayedComponents: .date)
             .labelsHidden()
@@ -75,35 +79,47 @@ struct CreateTimeText: View {
         }
       }
       .border(Color("NormalRed"), width: 2)
-      Text("請選擇一種日期格式")
-        .foregroundColor(.white)
-        .padding(.top, 15)
-      ScrollView(.vertical) {
-        LazyVStack {
-          ForEach(0 ..< translateFormat.count, id: \.self) { idx in
-            Button {
-              selectedFormat = translateFormat[idx]
-            } label: {
-              HStack(spacing: 5) {
-                Color.clear.frame(width: 20)
-                Text(translateFormat[idx].frontDateFormat + translateFormat[idx].hourFormat)
-                  .foregroundColor(Color("Green"))
-                Color.clear
+//      VStack(spacing: 0) {
+        HStack {
+          Text("請選擇一種日期格式")
+            .foregroundColor(.white)
+            .padding(.top, 10)
+            .padding(.leading, 10)
+            .padding(.bottom, 10)
+            .lineLimit(1)
+          Spacer()
+        }
+        ScrollView(.vertical) {
+          LazyVStack(spacing: 0) {
+            ForEach(0 ..< translateFormat.count, id: \.self) { idx in
+              Button {
+                selectedFormat = translateFormat[idx]
+              } label: {
+                HStack(spacing: 0) {
+                  Text(translateFormat[idx].title)
+                    .padding(.leading)
+                    .lineLimit(1)
+                    .foregroundColor(Color("Green"))
+                  Spacer()
+                }
               }
             }
           }
         }
-      }
+//      }
+//      .border(Color("LogoGreen"), width: 1)
       Button {
         // TODO: 回傳資料
         finalDate = changeDateFormat(format: selectedFormat, inputDate: selectedDate, inputHour: selectedHour)
-        popBool = false
-//        pushMode.wrappedValue.dismiss()
+//        popBool = false
+        pushMode.wrappedValue.dismiss()
       } label: {
         Text("確認")
           .foregroundColor(Color.black)
       }
       .frame(width: 160, height: 50)
+      .padding(.top, 5)
+      .padding(.bottom, 5)
       .background(
         RoundedRectangle(cornerRadius: 18)
           .frame(width: 160, height: 50)
@@ -152,8 +168,11 @@ struct CreateTimeText: View {
   }
 }
 
-struct CreateTimeText_Previews: PreviewProvider {
-  static var previews: some View {
-    CreateTimeText(finalDate: .constant("2022-09-14 23:45"), popBool: .constant(false))
-  }
-}
+// MARK: - Preview
+
+//struct CreateTimeText_Previews: PreviewProvider {
+//  static var previews: some View {
+//    CreateTimeText(finalDate: .constant("2022-09-14 23:45"), popBool: .constant(true))
+//      .previewDevice(PreviewDevice(rawValue: "iPhone 8"))
+//  }
+//}

@@ -56,7 +56,7 @@ struct EditLabelPage: View {
   }
 
   // 下方工具列的圖片名稱
-  private let imageNameArray: [String] = ["list.bullet.rectangle", "123.rectangle", "clock", "rectangle", "tablecells", "barcode", "qrcode", "photo"]
+  private let imageNameArray: [String] = ["list.bullet.rectangle", "t.square", "clock", "rectangle", "tablecells", "barcode", "qrcode", "photo"]
 
   // MARK: - BODY
 
@@ -67,8 +67,8 @@ struct EditLabelPage: View {
     let navigationHeght: CGFloat = 50 // 暫定為50
     // 拖曳、觸控移動
     let drag = DragGesture(minimumDistance: 0).onChanged { value in
-      // drag point
-      let point = CGPoint(x: value.location.x - 9, y: value.location.y)
+      // drag point 觸控的點位是全螢幕的，要另外換算成標籤內部的數值。
+      let point = CGPoint(x: value.location.x - 9, y: value.location.y - topSafeAreaHeight - navigationHeght)
       if activeIdx >= 0 {
         // Text 的範圍
         let textFrame = CGRect(x: point.x, y: point.y, width: textPositions[activeIdx].frameSize.width, height: textPositions[activeIdx].frameSize.height)
@@ -76,7 +76,7 @@ struct EditLabelPage: View {
         let textCenter = textPositions[activeIdx].point
 
         // TODO: 避免觸控失誤，應該把範圍稍微拉大
-        if point.x > textCenter.x - (textFrame.width / 2) && point.x < textCenter.x + (textFrame.width / 2) && point.y > textCenter.y - (textFrame.height / 2) && point.y < textCenter.y + (textFrame.height / 2) {
+        if point.x > textCenter.x - (textFrame.width / 2) && point.x < textCenter.x + (textFrame.width / 2) && point.y > textCenter.y - (textFrame.height / 2) - 10 && point.y < textCenter.y + (textFrame.height / 2) + 10 {
           // 改變Text的位置
           textPositions[activeIdx].point = point
         } else {
@@ -90,9 +90,9 @@ struct EditLabelPage: View {
       // safe area 填入黑色
       Color.black
         .frame(height: topSafeAreaHeight + navigationHeght)
-//        .onAppear {
-//          print(topSafeAreaHeight + navigationHeght)
-//        }
+        .onAppear {
+          print("上方高度：", topSafeAreaHeight + navigationHeght)
+        }
       selfRectView()
       Button {
         let uiImage = selfRectView().snapshot()
@@ -159,37 +159,8 @@ struct EditLabelPage: View {
                     .foregroundColor(.white)
                 }
               case 2: // 跳到選擇日期時間的頁面
-                Button {
-                  createDatePageBool = true
-                } label: {
-                  Image(systemName: imageNameArray[idxNum])
-                    .font(.system(size: 40, weight: .medium, design: .rounded))
-                    .foregroundColor(.white)
-                }
-                .sheet(isPresented: $createDatePageBool, content: {
-                  CreateTimeText(finalDate: $returnTimeStr, popBool: $createDatePageBool)
-                })
-
-//                NavigationLink {
-//                  CreateTimeText(finalDate: $returnTimeStr)
-//                } label: {
-//                  Image(systemName: imageNameArray[idxNum])
-//                    .font(.system(size: 40, weight: .medium, design: .rounded))
-//                    .foregroundColor(.white)
-//                }
-                .onAppear {
-                  // TODO: 製造一個Text 是日期
-                  print("日期製造器")
-                  if returnTimeStr != "1" {
-                    #warning("textContent 會變動嗎？")
-                    textPositions.append(TextIdxType(idx: textPositions.count, textContent: returnTimeStr.description, point: CGPoint(x: insideRectWidth / 2, y: insideHeight / 2), frameSize: CGSize(width: 120, height: 50), textSize: 15, boldCharacterBool: false, italicBool: false, underlineBool: false, degree: 0))
-                    returnTimeStr = "1"
-                    print("改動後的數值：", textPositions.last!)
-                  }
-                }
-              case 3:
                 NavigationLink(isActive: $createDatePageBool) {
-                  CreateTimeText(finalDate: $returnTimeStr, popBool: $createDatePageBool)
+                  CreateTimeText(finalDate: $returnTimeStr)
                 } label: {
                   Image(systemName: imageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
@@ -204,7 +175,6 @@ struct EditLabelPage: View {
                     print("改動後的數值：", textPositions.last!)
                   }
                 }
-
               default:
                 Image(systemName: imageNameArray[idxNum])
                   .font(.system(size: 40, weight: .medium, design: .rounded))
@@ -265,8 +235,18 @@ struct EditLabelPage: View {
           ForEach(textPositions.indices, id: \.self) { index in
             // $activeIdx 代表 activeIdx 會隨 editingText變動。
             EditingText(activeText: $activeIdx, label: textPositions[index].textContent, idx: textPositions[index].idx, underlineBool: textPositions[index].underlineBool)
-              .frame(width: textPositions[index].frameSize.width, height: textPositions[index].frameSize.height)
-              .position(textPositions[index].point)
+              .background(
+                GeometryReader(content: { geometry in
+                  Color.clear.onAppear {
+                    print(index, " -> text -> ", geometry.frame(in: .global))
+                    textPositions[index].frameSize = geometry.frame(in: .global).size
+//                    let oneSecondWidth = GPoint(x: centerX, y: centerY)
+//                    print(index, " -> text -> ", geometry.frame(in: .local))
+                    print("center point -> ", textPositions[index].point)
+                  }
+                })
+              )
+              .position(textPositions[index].point) // 這是在標籤範圍裡面的點位 text的center
               .font(textPositions[index].boldCharacterBool ? textPositions[index].italicBool ? .system(size: textPositions[index].textSize).bold().italic() : .system(size: textPositions[index].textSize).bold() : textPositions[index].italicBool ? .system(size: textPositions[index].textSize).italic() : .system(size: textPositions[index].textSize))
 
             // 旋轉後移動會跟著旋轉，暫無法使用

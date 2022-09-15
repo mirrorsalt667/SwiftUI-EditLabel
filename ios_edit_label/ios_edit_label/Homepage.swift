@@ -75,7 +75,7 @@ struct Homepage: View {
                   }
                 case 4:
                   NavigationLink {
-                    CreateTimeText(finalDate: .constant("1"), popBool: .constant(true))
+//                    CreateTimeText(finalDate: .constant("1"), popBool: .constant(true))
                   } label: {
                     Image(systemName: mSymbols[index])
                       .font(.system(size: 40, weight: .medium, design: .rounded))

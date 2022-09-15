@@ -60,10 +60,10 @@
 			isa = PBXGroup;
 			children = (
 				0666F98F28D05FEE00CF0BA5 /* Extension */,
+				0663DD3328CEBC1B004F9A79 /* ios_edit_labelApp.swift */,
 				0663DD4328CEFDF9004F9A79 /* Homepage.swift */,
 				0666F98D28D05E9500CF0BA5 /* EditLabelPage.swift */,
 				0699ED6528D1B9CD0007ECBF /* CreateTimeText.swift */,
-				0663DD3328CEBC1B004F9A79 /* ios_edit_labelApp.swift */,
 				0663DD3528CEBC1B004F9A79 /* ContentView.swift */,
 				0663DD3728CEBC1C004F9A79 /* Assets.xcassets */,
 				0663DD3928CEBC1C004F9A79 /* Preview Content */,
@@ -296,6 +296,7 @@
 				DEVELOPMENT_TEAM = L8GTU6QG59;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "請開啟相簿權限，為儲存標籤圖片到相簿裡。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -326,6 +327,7 @@
 				DEVELOPMENT_TEAM = L8GTU6QG59;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "請開啟相簿權限，為儲存標籤圖片到相簿裡。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
