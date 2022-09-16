@@ -5,12 +5,12 @@
 //  Created by sw_user03 on 2022/9/14.
 //
 
+// 產生日期的選擇頁面
 import SwiftUI
 
 struct CreateTimeText: View {
   @Environment(\.presentationMode) var pushMode
   @Binding var finalDate: String
-//  @Binding var popBool: Bool
 
   struct TimeFormat {
     let title: String
@@ -170,9 +170,9 @@ struct CreateTimeText: View {
 
 // MARK: - Preview
 
-//struct CreateTimeText_Previews: PreviewProvider {
-//  static var previews: some View {
-//    CreateTimeText(finalDate: .constant("2022-09-14 23:45"), popBool: .constant(true))
-//      .previewDevice(PreviewDevice(rawValue: "iPhone 8"))
-//  }
-//}
+struct CreateTimeText_Previews: PreviewProvider {
+  static var previews: some View {
+    CreateTimeText(finalDate: .constant("2022-09-14 23:45"))
+      .previewDevice(PreviewDevice(rawValue: "iPhone 8"))
+  }
+}

@@ -65,28 +65,47 @@ struct EditLabelPage: View {
     let topSafeAreaHeight = getSafeAreaTop()
     let bottomSafeAreaHeight = getSafeAreaBottom()
     let navigationHeght: CGFloat = 50 // 暫定為50
+    // 標籤範圍的高度
+    let insideHeight = insideRectWidth * ratio
+
     // 拖曳、觸控移動
-    let drag = DragGesture(minimumDistance: 0).onChanged { value in
+    let drag = DragGesture(minimumDistance: 20).onChanged { value in
       // drag point 觸控的點位是全螢幕的，要另外換算成標籤內部的數值。
+      let globalPoint = value.location
       let point = CGPoint(x: value.location.x - 9, y: value.location.y - topSafeAreaHeight - navigationHeght)
       if activeIdx >= 0 {
-        // Text 的範圍
-        let textFrame = CGRect(x: point.x, y: point.y, width: textPositions[activeIdx].frameSize.width, height: textPositions[activeIdx].frameSize.height)
-        // Text 的中心
-        let textCenter = textPositions[activeIdx].point
-
-        // TODO: 避免觸控失誤，應該把範圍稍微拉大
-        if point.x > textCenter.x - (textFrame.width / 2) && point.x < textCenter.x + (textFrame.width / 2) && point.y > textCenter.y - (textFrame.height / 2) - 10 && point.y < textCenter.y + (textFrame.height / 2) + 10 {
-          // 改變Text的位置
+        // 計算在範圍內才能滑動
+        let leadingTopPoint = CGPoint(x: 9, y: topSafeAreaHeight + navigationHeght)
+        let trailingBottomPoint = CGPoint(x: leadingTopPoint.x + insideRectWidth, y: leadingTopPoint.y + insideHeight)
+        if globalPoint.x > leadingTopPoint.x && globalPoint.y > leadingTopPoint.y && globalPoint.x < trailingBottomPoint.x && globalPoint.y < trailingBottomPoint.y {
           textPositions[activeIdx].point = point
-        } else {
-          // 不在範圍內的話就設為-99
-          activeIdx = -99
         }
       }
     }
+    let tab = DragGesture(minimumDistance: 0, coordinateSpace: CoordinateSpace.global)
+      .onChanged { value in
+        let point = CGPoint(x: value.startLocation.x - 9, y: value.startLocation.y - topSafeAreaHeight - navigationHeght)
+        if activeIdx >= 0 {
+          // Text 的範圍
+          let textFrame = CGRect(x: point.x, y: point.y, width: textPositions[activeIdx].frameSize.width, height: textPositions[activeIdx].frameSize.height)
+          // Text 的中心
+          let textCenter = textPositions[activeIdx].point
+
+          print("start -> ", value.startLocation)
+          if point.x > textCenter.x - (textFrame.width / 2) && point.x < textCenter.x + (textFrame.width / 2) && point.y > textCenter.y - (textFrame.height / 2) - 50 && point.y < textCenter.y + (textFrame.height / 2) + 50 {
+            // 改變Text的位置
+          } else {
+            // 不在範圍內的話就設為-99
+            activeIdx = -99
+          }
+        }
+      }
+    let tapGesture = TapGesture(count: 1).onEnded { () in
+      print("觸控")
+      activeIdx = -99
+    }
+
     VStack(spacing: 0) {
-      let insideHeight = insideRectWidth * ratio
       // safe area 填入黑色
       Color.black
         .frame(height: topSafeAreaHeight + navigationHeght)
@@ -191,6 +210,7 @@ struct EditLabelPage: View {
     }
     // 點擊回傳點擊位置，回傳的是最外層的數值，要經過處理才是框框裡的數值
     .gesture(drag)
+    .gesture(tapGesture)
     .background(Color.black)
     .edgesIgnoringSafeArea(.all)
     .onAppear {
@@ -282,17 +302,21 @@ struct EditLabelPage: View {
         .frame(height: 40)
       HStack(spacing: 10) {
         Button {
-          let sizeNum = textPositions[activeIdx].textSize
-          textPositions[activeIdx].textSize = sizeNum + 1
+          if activeIdx >= 0 {
+            let sizeNum = textPositions[activeIdx].textSize
+            textPositions[activeIdx].textSize = sizeNum + 1
+          }
         } label: {
           Image(systemName: "plus.magnifyingglass")
             .font(.system(size: 30))
             .frame(width: 35, height: 35)
         }
         Button {
-          let sizeNum = textPositions[activeIdx].textSize
-          if sizeNum > 0 {
-            textPositions[activeIdx].textSize = sizeNum - 1
+          if activeIdx >= 0 {
+            let sizeNum = textPositions[activeIdx].textSize
+            if sizeNum > 0 {
+              textPositions[activeIdx].textSize = sizeNum - 1
+            }
           }
         } label: {
           Image(systemName: "minus.magnifyingglass")
