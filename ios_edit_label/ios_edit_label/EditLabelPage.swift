@@ -5,58 +5,79 @@
 //  Created by sw_user03 on 2022/9/13.
 //
 
+// MARK: 編輯標籤頁面
+
 import SwiftUI
 
-struct TextIdxType {
+struct ComponentsIdxType: Codable {
   // 產生的序號
   let idx: Int
-  // 文字內容
-  var textContent: String
+  // 元件種類
+  let componentType: String
   // 位置點位
   var point: CGPoint
-  // 位移量
-//  var position: CGSize
   // 長寬
   var frameSize: CGSize
+  // 角度 上下左右
+  var degree: Double
+  // 文字內容
+  var textContent: String
   // 文字大小
   var textSize: CGFloat
   // 粗體
-  var boldCharacterBool: Bool
+  var textIsBold: Bool
   // 斜體
-  var italicBool: Bool
+  var textIsItalic: Bool
   // 底線
-  var underlineBool: Bool
-  // 角度 上下左右
-  var degree: Double
+  var textIsUnderline: Bool
+  // Rectangle
+  var rectLineWidth: CGFloat
+  var pathPoint: CGPoint
+  // 虛線嗎
+  var rectIsDash: Bool
+  var rectDashLength: CGFloat
+  // 黑色背景
+//  var rectIsBlackBackground: Bool
+  // 長方形圓角
+  var rectCornerRadius: CGFloat
 }
 
+// MARK: - main View
+
 struct EditLabelPage: View {
-  // 下面控制盤的升降
-  @State private var showView: Bool = false
-  // 控制盤偏移
-  @State private var offsetY: CGFloat = 0
+  // 下面文字控制盤的升降
+  @State private var mTextControlShow: Bool = false
+  // 文字控制盤偏移
+  @State private var mTextOffsetY: CGFloat = 0
   // 螢幕長寬比
-  @State private var ratio: CGFloat = 3 / 4
-  // 選取中text的index數字
-  @State private var activeIdx: Int = -1
+  @State private var mLabelRatio: CGFloat = 3 / 4
+  // 選取中的元件index數字
+  @State private var mActiveIdx: Int = -1
   // Text資料陣列
-  @State private var textPositions = [TextIdxType]()
+  @State private var mMainComponentsArr = [ComponentsIdxType]()
 
   // 彈出視窗（文字更改用）
-  @State private var popoverBool: Bool = false
+  @State private var mIsTextPopoverShow: Bool = false
 
   // 時間
-  @State private var returnTimeStr: String = "1"
+  @State private var mReturnTimeStr: String = "1"
   // 製造日期頁面的Bool
-  @State private var createDatePageBool: Bool = false
+  @State private var mIsCreateDatePageShow: Bool = false
+
+  // 新增形狀元件的頁面、位移量
+  @State private var mIsNewRectShow: Bool = false
+  @State private var mNewRectOffsetY: CGFloat = 0
+
+  // 控制盤的出現與消失
+  @State private var mIsControlShow: Bool = false
 
   // 畫布的寬度 距離兩邊各為9，故減18
-  private var insideRectWidth: CGFloat {
+  private var mInsideLabelWidth: CGFloat {
     UIScreen.main.bounds.width - 18
   }
 
   // 下方工具列的圖片名稱
-  private let imageNameArray: [String] = ["list.bullet.rectangle", "t.square", "clock", "rectangle", "tablecells", "barcode", "qrcode", "photo"]
+  private let mToolBarImageNameArray: [String] = ["list.bullet.rectangle", "t.square", "clock", "rectangle", "lineweight", "tablecells", "barcode", "qrcode", "photo"]
 
   // MARK: - BODY
 
@@ -66,56 +87,30 @@ struct EditLabelPage: View {
     let bottomSafeAreaHeight = getSafeAreaBottom()
     let navigationHeght: CGFloat = 50 // 暫定為50
     // 標籤範圍的高度
-    let insideHeight = insideRectWidth * ratio
+    let insideHeight = mInsideLabelWidth * mLabelRatio
 
     // 拖曳、觸控移動
     let drag = DragGesture(minimumDistance: 20).onChanged { value in
       // drag point 觸控的點位是全螢幕的，要另外換算成標籤內部的數值。
       let globalPoint = value.location
       let point = CGPoint(x: value.location.x - 9, y: value.location.y - topSafeAreaHeight - navigationHeght)
-      if activeIdx >= 0 {
+      if mActiveIdx >= 0 {
         // 計算在範圍內才能滑動
         let leadingTopPoint = CGPoint(x: 9, y: topSafeAreaHeight + navigationHeght)
-        let trailingBottomPoint = CGPoint(x: leadingTopPoint.x + insideRectWidth, y: leadingTopPoint.y + insideHeight)
+        let trailingBottomPoint = CGPoint(x: leadingTopPoint.x + mInsideLabelWidth, y: leadingTopPoint.y + insideHeight)
         if globalPoint.x > leadingTopPoint.x && globalPoint.y > leadingTopPoint.y && globalPoint.x < trailingBottomPoint.x && globalPoint.y < trailingBottomPoint.y {
-          textPositions[activeIdx].point = point
+          mMainComponentsArr[mActiveIdx].point = point
         }
       }
     }
-    let tab = DragGesture(minimumDistance: 0, coordinateSpace: CoordinateSpace.global)
-      .onChanged { value in
-        let point = CGPoint(x: value.startLocation.x - 9, y: value.startLocation.y - topSafeAreaHeight - navigationHeght)
-        if activeIdx >= 0 {
-          // Text 的範圍
-          let textFrame = CGRect(x: point.x, y: point.y, width: textPositions[activeIdx].frameSize.width, height: textPositions[activeIdx].frameSize.height)
-          // Text 的中心
-          let textCenter = textPositions[activeIdx].point
-
-          print("start -> ", value.startLocation)
-          if point.x > textCenter.x - (textFrame.width / 2) && point.x < textCenter.x + (textFrame.width / 2) && point.y > textCenter.y - (textFrame.height / 2) - 50 && point.y < textCenter.y + (textFrame.height / 2) + 50 {
-            // 改變Text的位置
-          } else {
-            // 不在範圍內的話就設為-99
-            activeIdx = -99
-          }
-        }
-      }
     let tapGesture = TapGesture(count: 1).onEnded { () in
-      print("觸控")
-      activeIdx = -99
+      mActiveIdx = -99
     }
 
     VStack(spacing: 0) {
-      // safe area 填入黑色
-      Color.black
-        .frame(height: topSafeAreaHeight + navigationHeght)
-        .onAppear {
-          print("上方高度：", topSafeAreaHeight + navigationHeght)
-        }
       selfRectView()
       Button {
         let uiImage = selfRectView().snapshot()
-//        print(insideHeight, insideRectWidth)
         UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
       } label: {
         Text("完成")
@@ -127,10 +122,12 @@ struct EditLabelPage: View {
             RoundedRectangle(cornerRadius: 10)
               .border(Color("TiffanyBlue"))
               .foregroundColor(Color.clear)
-//            .cornerRadius(20)
           )
       }
       .padding()
+
+      ControlComponentsView(b_isShow: $mIsControlShow, b_componentsArr: $mMainComponentsArr, mActiveIdx: mActiveIdx)
+        .opacity(mIsControlShow ? 1 : 0)
 
       Color.black
 
@@ -142,80 +139,139 @@ struct EditLabelPage: View {
         // 11pro -> 44.0
         // 11pro max -> 44.0
         // 控制盤的上升下降
-        if showView {
+        if mTextControlShow {
           thisIsAView()
             .onAppear {
               withAnimation(.linear(duration: 0.4)) {
-                self.offsetY = 0
+                self.mTextOffsetY = 0
               }
             }
         } else {
           thisIsAView()
             .onAppear {
               withAnimation(.linear(duration: 0.2)) {
-                self.offsetY = 120
+                self.mTextOffsetY = 120
               }
             }
         }
+
+        if mIsNewRectShow {
+          CreateNewRectView(b_isShowing: $mIsNewRectShow, b_componentsArr: $mMainComponentsArr, mOffsetY: mNewRectOffsetY)
+            .onAppear {
+              withAnimation(.linear(duration: 0.4)) {
+                mNewRectOffsetY = 0
+              }
+            }
+        } else {
+          CreateNewRectView(b_isShowing: $mIsNewRectShow, b_componentsArr: $mMainComponentsArr, mOffsetY: mNewRectOffsetY)
+            .onAppear {
+              withAnimation(.linear(duration: 0.2)) {
+                mNewRectOffsetY = 120
+              }
+            }
+        }
+
         ScrollView(.horizontal) {
           LazyHGrid(rows: [GridItem(.flexible())]) {
-            ForEach(imageNameArray.indices, id: \.self) { idxNum in
+            ForEach(mToolBarImageNameArray.indices, id: \.self) { idxNum in
               switch idxNum {
               case 0: // 控制盤上下移
                 Button {
-                  showView.toggle()
+                  mTextControlShow.toggle()
                 } label: {
-                  Image(systemName: imageNameArray[idxNum])
+                  Image(systemName: mToolBarImageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                 }
               case 1: // 加一個文字
                 Button {
-                  textPositions.append(TextIdxType(idx: textPositions.count, textContent: "Test\(textPositions.count)", point: CGPoint(x: insideRectWidth / 2, y: insideHeight / 2), frameSize: CGSize(width: 120, height: 50), textSize: 15, boldCharacterBool: false, italicBool: false, underlineBool: false, degree: 0))
+                  mMainComponentsArr.append(ComponentsIdxType(
+                    idx: mMainComponentsArr.count,
+                    componentType: ComponentTypeEnum.text.rawValue,
+                    point: CGPoint(x: mInsideLabelWidth / 2, y: insideHeight / 2),
+                    frameSize: CGSize(width: 120, height: 50),
+                    degree: 0,
+                    textContent: "Test\(mMainComponentsArr.count)",
+                    textSize: 15,
+                    textIsBold: false,
+                    textIsItalic: false,
+                    textIsUnderline: false,
+                    rectLineWidth: 2,
+                    pathPoint: CGPoint(),
+                    rectIsDash: false,
+                    rectDashLength: 0,
+                    rectCornerRadius: 0
+                  ))
                 } label: {
-                  Image(systemName: imageNameArray[idxNum])
+                  Image(systemName: mToolBarImageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                 }
               case 2: // 跳到選擇日期時間的頁面
-                NavigationLink(isActive: $createDatePageBool) {
-                  CreateTimeText(finalDate: $returnTimeStr)
+                NavigationLink(isActive: $mIsCreateDatePageShow) {
+                  CreateTimeText(finalDate: $mReturnTimeStr)
                 } label: {
-                  Image(systemName: imageNameArray[idxNum])
+                  Image(systemName: mToolBarImageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                 }
                 .onAppear {
-                  // TODO: 製造一個Text 是日期
-                  print("日期製造器")
-                  if returnTimeStr != "1" {
-                    textPositions.append(TextIdxType(idx: textPositions.count, textContent: returnTimeStr.description, point: CGPoint(x: insideRectWidth / 2, y: insideHeight / 2), frameSize: CGSize(width: 120, height: 50), textSize: 15, boldCharacterBool: false, italicBool: false, underlineBool: false, degree: 0))
-                    returnTimeStr = "1"
-                    print("改動後的數值：", textPositions.last!)
+                  if mReturnTimeStr != "1" {
+                    mMainComponentsArr.append(
+                      ComponentsIdxType(idx: mMainComponentsArr.count,
+                                        componentType: ComponentTypeEnum.text.rawValue,
+                                        point: CGPoint(x: mInsideLabelWidth / 2, y: insideHeight / 2),
+                                        frameSize: CGSize(width: 120, height: 50),
+                                        degree: 0,
+                                        textContent: mReturnTimeStr.description,
+                                        textSize: 15,
+                                        textIsBold: false,
+                                        textIsItalic: false,
+                                        textIsUnderline: false,
+                                        rectLineWidth: 2,
+                                        pathPoint: CGPoint(),
+                                        rectIsDash: false,
+                                        rectDashLength: 0,
+                                        rectCornerRadius: 0)
+                    )
+                    mReturnTimeStr = "1"
                   }
                 }
+              case 3:
+                Button {
+                  mIsNewRectShow.toggle()
+                } label: {
+                  Image(systemName: mToolBarImageNameArray[idxNum])
+                    .font(.system(size: 40, weight: .medium, design: .rounded))
+                    .foregroundColor(.white)
+                }
+              case 4:
+                Button {
+                  mIsControlShow.toggle()
+                } label: {
+                  Image(systemName: mToolBarImageNameArray[idxNum])
+                    .font(.system(size: 40, weight: .medium, design: .rounded))
+                    .foregroundColor(.white)
+                }
               default:
-                Image(systemName: imageNameArray[idxNum])
+                Image(systemName: mToolBarImageNameArray[idxNum])
                   .font(.system(size: 40, weight: .medium, design: .rounded))
                   .foregroundColor(.white)
               }
             }
           }
         }
-        .background(Color.blue)
+        .background(Color("DeepLogoGreen"))
       }
       .frame(height: 80)
-      Color.black
-        .frame(height: bottomSafeAreaHeight)
     }
+    .padding(.bottom, bottomSafeAreaHeight)
+    .padding(.top, topSafeAreaHeight + navigationHeght)
     // 點擊回傳點擊位置，回傳的是最外層的數值，要經過處理才是框框裡的數值
     .gesture(drag)
     .gesture(tapGesture)
     .background(Color.black)
     .edgesIgnoringSafeArea(.all)
-    .onAppear {
-      print("load page~~~~~~~~~~~")
-    }
   }
 
   // MARK: - Function
@@ -246,31 +302,59 @@ struct EditLabelPage: View {
 
   @ViewBuilder
   private func selfRectView() -> some View {
-    let insideHeight = insideRectWidth * ratio
+    let insideHeight = mInsideLabelWidth * mLabelRatio
     RoundedRectangle(cornerRadius: 0, style: .continuous)
-      .frame(width: insideRectWidth, height: insideHeight, alignment: .top)
+      .frame(width: mInsideLabelWidth, height: insideHeight, alignment: .top)
       .foregroundColor(Color.white)
       .overlay(
         ZStack {
-          ForEach(textPositions.indices, id: \.self) { index in
-            // $activeIdx 代表 activeIdx 會隨 editingText變動。
-            EditingText(activeText: $activeIdx, label: textPositions[index].textContent, idx: textPositions[index].idx, underlineBool: textPositions[index].underlineBool)
-              .background(
-                GeometryReader(content: { geometry in
-                  Color.clear.onAppear {
-                    print(index, " -> text -> ", geometry.frame(in: .global))
-                    textPositions[index].frameSize = geometry.frame(in: .global).size
-//                    let oneSecondWidth = GPoint(x: centerX, y: centerY)
-//                    print(index, " -> text -> ", geometry.frame(in: .local))
-                    print("center point -> ", textPositions[index].point)
-                  }
-                })
-              )
-              .position(textPositions[index].point) // 這是在標籤範圍裡面的點位 text的center
-              .font(textPositions[index].boldCharacterBool ? textPositions[index].italicBool ? .system(size: textPositions[index].textSize).bold().italic() : .system(size: textPositions[index].textSize).bold() : textPositions[index].italicBool ? .system(size: textPositions[index].textSize).italic() : .system(size: textPositions[index].textSize))
+          ForEach(mMainComponentsArr.indices, id: \.self) { index in
+
+            let idx = mMainComponentsArr[index].idx
+            let centerPoint = mMainComponentsArr[index].point
+            let width = mMainComponentsArr[index].frameSize.width
+            let height = mMainComponentsArr[index].frameSize.height
+            let isDash = mMainComponentsArr[index].rectIsDash
+            let dashLength = mMainComponentsArr[index].rectDashLength
+            let lineWidth = mMainComponentsArr[index].rectLineWidth
+            let pathPoint = mMainComponentsArr[index].pathPoint
+
+            switch mMainComponentsArr[index].componentType {
+            case ComponentTypeEnum.text.rawValue:
+              // $activeIdx 代表 activeIdx 會隨 editingText變動。
+              EditingText(activeText: $mActiveIdx,
+                          label: mMainComponentsArr[index].textContent,
+                          idx: idx,
+                          underlineBool: mMainComponentsArr[index].textIsUnderline)
+                .background(
+                  GeometryReader(content: { geometry in
+                    Color.clear.onAppear {
+                      mMainComponentsArr[index].frameSize = geometry.frame(in: .global).size
+                    }
+                  })
+                )
+                .position(centerPoint) // 這是在標籤範圍裡面的點位 text的center
+                .font(mMainComponentsArr[index].textIsBold ? mMainComponentsArr[index].textIsItalic ? .system(size: mMainComponentsArr[index].textSize).bold().italic() : .system(size: mMainComponentsArr[index].textSize).bold() : mMainComponentsArr[index].textIsItalic ? .system(size: mMainComponentsArr[index].textSize).italic() : .system(size: mMainComponentsArr[index].textSize))
 
             // 旋轉後移動會跟著旋轉，暫無法使用
 //              .rotationEffect(.degrees(textPositions[index].degree))
+            case ComponentTypeEnum.line.rawValue:
+              PathView(activeIdx: $mActiveIdx, idx: idx, pathFrame: CGSize(width: width, height: height), startPoint: pathPoint, endPoint: CGPoint(x: pathPoint.x + width, y: pathPoint.y), isDash: isDash, dashLength: 5, lineWidth: lineWidth)
+                .position(centerPoint)
+            case ComponentTypeEnum.rectangle.rawValue:
+              RectangleView(activeIdx: $mActiveIdx, idx: idx, lineWidth: lineWidth, isDash: isDash, dashLength: dashLength, rectFrame: CGSize(width: width, height: height))
+                .position(centerPoint)
+            case ComponentTypeEnum.roundedRectangle.rawValue:
+              RoundedRectangleView(activeIdx: $mActiveIdx, idx: idx, lineWidth: lineWidth, isDash: isDash, dashLength: dashLength, rectFrame: CGSize(width: width, height: height), rectCorner: mMainComponentsArr[index].rectCornerRadius)
+                .position(centerPoint)
+            case ComponentTypeEnum.circle.rawValue:
+              CircleView(activeIdx: $mActiveIdx, idx: idx, lineWidth: lineWidth, isDash: isDash, dashLength: dashLength, circleFrame: CGSize(width: width, height: height))
+                .position(centerPoint)
+            case ComponentTypeEnum.oval.rawValue:
+              OvalView(activeIdx: $mActiveIdx, idx: idx, lineWidth: lineWidth, isDash: isDash, dashLength: dashLength, ovalFrame: CGSize(width: width, height: height))
+                .position(centerPoint)
+            default: EmptyView()
+            }
           }
         }
       )
@@ -293,7 +377,7 @@ struct EditLabelPage: View {
               print(horizontalAmount < 0 ? "left swipe" : "right swipe")
             } else {
               print(verticalAmount < 0 ? "up swipe" : "down swipe")
-              showView = verticalAmount < 0
+              mTextControlShow = verticalAmount < 0
             }
           })
       Text("Setting")
@@ -302,9 +386,9 @@ struct EditLabelPage: View {
         .frame(height: 40)
       HStack(spacing: 10) {
         Button {
-          if activeIdx >= 0 {
-            let sizeNum = textPositions[activeIdx].textSize
-            textPositions[activeIdx].textSize = sizeNum + 1
+          if mActiveIdx >= 0 {
+            let sizeNum = mMainComponentsArr[mActiveIdx].textSize
+            mMainComponentsArr[mActiveIdx].textSize = sizeNum + 1
           }
         } label: {
           Image(systemName: "plus.magnifyingglass")
@@ -312,10 +396,10 @@ struct EditLabelPage: View {
             .frame(width: 35, height: 35)
         }
         Button {
-          if activeIdx >= 0 {
-            let sizeNum = textPositions[activeIdx].textSize
+          if mActiveIdx >= 0 {
+            let sizeNum = mMainComponentsArr[mActiveIdx].textSize
             if sizeNum > 0 {
-              textPositions[activeIdx].textSize = sizeNum - 1
+              mMainComponentsArr[mActiveIdx].textSize = sizeNum - 1
             }
           }
         } label: {
@@ -324,47 +408,47 @@ struct EditLabelPage: View {
             .frame(width: 35, height: 35)
         }
         Button {
-          let bool = textPositions[activeIdx].boldCharacterBool
-          textPositions[activeIdx].boldCharacterBool = !bool
+          let bool = mMainComponentsArr[mActiveIdx].textIsBold
+          mMainComponentsArr[mActiveIdx].textIsBold = !bool
         } label: {
           Image(systemName: "bold")
             .font(.system(size: 30))
             .frame(width: 35, height: 35)
         }
         Button {
-          let bool = textPositions[activeIdx].italicBool
-          textPositions[activeIdx].italicBool = !bool
+          let bool = mMainComponentsArr[mActiveIdx].textIsItalic
+          mMainComponentsArr[mActiveIdx].textIsItalic = !bool
         } label: {
           Image(systemName: "italic")
             .font(.system(size: 30))
             .frame(width: 35, height: 35)
         }
         Button {
-          let bool = textPositions[activeIdx].underlineBool
-          textPositions[activeIdx].underlineBool = !bool
+          let bool = mMainComponentsArr[mActiveIdx].textIsUnderline
+          mMainComponentsArr[mActiveIdx].textIsUnderline = !bool
         } label: {
           Image(systemName: "underline")
             .font(.system(size: 30))
             .frame(width: 35, height: 35)
         }
         Button {
-          popoverBool = true
+          mIsTextPopoverShow = true
         } label: {
           Image(systemName: "pencil.circle")
             .font(.system(size: 30))
             .frame(width: 35, height: 35)
         }
-        .popover(isPresented: $popoverBool) {
+        .popover(isPresented: $mIsTextPopoverShow) {
           VStack(spacing: 30) {
             HStack {
-              TextField("EditTextField", text: $textPositions[activeIdx].textContent)
+              TextField("EditTextField", text: $mMainComponentsArr[mActiveIdx].textContent)
                 .font(.system(size: 18))
                 .foregroundColor(.black)
                 .frame(width: 300)
                 .textFieldStyle(.roundedBorder)
             }
             Button {
-              popoverBool = false
+              mIsTextPopoverShow = false
             } label: {
               Text("確認")
             }
@@ -402,36 +486,7 @@ struct EditLabelPage: View {
     .cornerRadius(30)
     .shadow(radius: 20)
     // 上下移動的變量
-    .position(x: UIScreen.main.bounds.width / 2, y: offsetY)
-  }
-}
-
-// MARK: - others struct
-
-struct EditingText: View {
-  @Binding var activeText: Int
-  let label: String
-  let idx: Int
-  var underlineBool: Bool
-
-  var body: some View {
-    Text(label)
-      .underline(underlineBool)
-      .onTapGesture {
-        print("idx ", idx, "; act ", activeText, ",", label)
-        self.activeText = self.idx
-        print("idx ", idx, "; act ", activeText, ",", label)
-      }
-      .background(EditingBorder(show: activeText == idx))
-  }
-}
-
-struct EditingBorder: View {
-  let show: Bool
-  var body: some View {
-    RoundedRectangle(cornerRadius: 3)
-      .stroke(lineWidth: 2)
-      .foregroundColor(show ? Color.red : Color.clear)
+    .position(x: UIScreen.main.bounds.width / 2, y: mTextOffsetY)
   }
 }
 

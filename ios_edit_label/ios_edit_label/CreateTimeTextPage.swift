@@ -1,11 +1,12 @@
 //
-//  CreateTimeText.swift
+//  CreateTimeTextPage.swift
 //  ios_edit_label
 //
-//  Created by sw_user03 on 2022/9/14.
+//  Created by sw_user03 on 2022/9/20.
 //
 
-// 產生日期的選擇頁面
+// MARK: 產生日期的選擇頁面
+
 import SwiftUI
 
 struct CreateTimeText: View {

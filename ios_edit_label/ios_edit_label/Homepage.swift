@@ -5,6 +5,14 @@
 //  Created by sw_user03 on 2022/8/30.
 //
 
+// MARK: 首頁
+
+// Name Rules
+// mName -> 該view內的全域變數、常數
+// b_name -> 該物件中的Binding變數、常數
+
+
+
 import SwiftUI
 
 struct Homepage: View {

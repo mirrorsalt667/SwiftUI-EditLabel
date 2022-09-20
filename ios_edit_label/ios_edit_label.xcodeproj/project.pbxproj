@@ -14,7 +14,9 @@
 		0663DD4428CEFDF9004F9A79 /* Homepage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0663DD4328CEFDF9004F9A79 /* Homepage.swift */; };
 		0666F98E28D05E9500CF0BA5 /* EditLabelPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0666F98D28D05E9500CF0BA5 /* EditLabelPage.swift */; };
 		0666F99128D0600600CF0BA5 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0666F99028D0600600CF0BA5 /* ViewExtension.swift */; };
-		0699ED6628D1B9CD0007ECBF /* CreateTimeText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0699ED6528D1B9CD0007ECBF /* CreateTimeText.swift */; };
+		069A5FE028D9A6B8000EA2E8 /* ComponentsEnumAndViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069A5FDF28D9A6B8000EA2E8 /* ComponentsEnumAndViews.swift */; };
+		069A5FE228D9A843000EA2E8 /* CreateTimeTextPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069A5FE128D9A843000EA2E8 /* CreateTimeTextPage.swift */; };
+		069A5FE528D9A8B2000EA2E8 /* ComponentsSettingViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 069A5FE428D9A8B2000EA2E8 /* ComponentsSettingViews.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,7 +28,9 @@
 		0663DD4328CEFDF9004F9A79 /* Homepage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Homepage.swift; sourceTree = "<group>"; };
 		0666F98D28D05E9500CF0BA5 /* EditLabelPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditLabelPage.swift; sourceTree = "<group>"; };
 		0666F99028D0600600CF0BA5 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
-		0699ED6528D1B9CD0007ECBF /* CreateTimeText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTimeText.swift; sourceTree = "<group>"; };
+		069A5FDF28D9A6B8000EA2E8 /* ComponentsEnumAndViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentsEnumAndViews.swift; sourceTree = "<group>"; };
+		069A5FE128D9A843000EA2E8 /* CreateTimeTextPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTimeTextPage.swift; sourceTree = "<group>"; };
+		069A5FE428D9A8B2000EA2E8 /* ComponentsSettingViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentsSettingViews.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,11 +63,13 @@
 		0663DD3228CEBC1B004F9A79 /* ios_edit_label */ = {
 			isa = PBXGroup;
 			children = (
+				069A5FDE28D9A68A000EA2E8 /* SupportFiles */,
 				0666F98F28D05FEE00CF0BA5 /* Extension */,
 				0663DD3328CEBC1B004F9A79 /* ios_edit_labelApp.swift */,
 				0663DD4328CEFDF9004F9A79 /* Homepage.swift */,
 				0666F98D28D05E9500CF0BA5 /* EditLabelPage.swift */,
-				0699ED6528D1B9CD0007ECBF /* CreateTimeText.swift */,
+				069A5FE128D9A843000EA2E8 /* CreateTimeTextPage.swift */,
+				069A5FE428D9A8B2000EA2E8 /* ComponentsSettingViews.swift */,
 				0663DD3528CEBC1B004F9A79 /* ContentView.swift */,
 				0663DD3728CEBC1C004F9A79 /* Assets.xcassets */,
 				0663DD3928CEBC1C004F9A79 /* Preview Content */,
@@ -85,6 +91,14 @@
 				0666F99028D0600600CF0BA5 /* ViewExtension.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		069A5FDE28D9A68A000EA2E8 /* SupportFiles */ = {
+			isa = PBXGroup;
+			children = (
+				069A5FDF28D9A6B8000EA2E8 /* ComponentsEnumAndViews.swift */,
+			);
+			path = SupportFiles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -157,10 +171,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				069A5FE228D9A843000EA2E8 /* CreateTimeTextPage.swift in Sources */,
+				069A5FE528D9A8B2000EA2E8 /* ComponentsSettingViews.swift in Sources */,
 				0663DD4428CEFDF9004F9A79 /* Homepage.swift in Sources */,
+				069A5FE028D9A6B8000EA2E8 /* ComponentsEnumAndViews.swift in Sources */,
 				0666F98E28D05E9500CF0BA5 /* EditLabelPage.swift in Sources */,
 				0663DD3628CEBC1B004F9A79 /* ContentView.swift in Sources */,
-				0699ED6628D1B9CD0007ECBF /* CreateTimeText.swift in Sources */,
 				0663DD3428CEBC1B004F9A79 /* ios_edit_labelApp.swift in Sources */,
 				0666F99128D0600600CF0BA5 /* ViewExtension.swift in Sources */,
 			);
