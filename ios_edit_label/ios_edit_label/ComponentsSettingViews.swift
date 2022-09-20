@@ -95,6 +95,7 @@ struct CreateNewRectView: View {
             .stroke(lineWidth: 2)
             .frame(width: 35, height: 25)
         }
+        // 圓角長方形
         Button {
           b_componentsArr.append(ComponentsIdxType(
             idx: b_componentsArr.count,
@@ -111,13 +112,14 @@ struct CreateNewRectView: View {
             pathPoint: CGPoint(),
             rectIsDash: false,
             rectDashLength: 5,
-            rectCornerRadius: 0)
+            rectCornerRadius: 5)
           )
         } label: {
           Image(systemName: "rectangle")
             .font(.system(size: 30))
             .frame(width: 35, height: 35)
         }
+        // 圓圈
         Button {
           b_componentsArr.append(ComponentsIdxType(
             idx: b_componentsArr.count,
@@ -141,6 +143,7 @@ struct CreateNewRectView: View {
             .font(.system(size: 30))
             .frame(width: 35, height: 35)
         }
+        // 橢圓
         Button {
           let frameWidth: CGFloat = 100
           let frameHeight: CGFloat = 60
