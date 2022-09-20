@@ -19,147 +19,147 @@ enum ComponentTypeEnum: String {
 }
 
 struct EditingText: View {
-  @Binding var activeText: Int
-  let label: String
-  let idx: Int
-  var underlineBool: Bool
+  @Binding var b_activeIdx: Int
+  let mLabel: String
+  let mIdx: Int
+  var mIsUnderline: Bool
 
   var body: some View {
-    Text(label)
-      .underline(underlineBool)
+    Text(mLabel)
+      .underline(mIsUnderline)
       .onTapGesture {
-        self.activeText = self.idx
+        b_activeIdx = mIdx
       }
-      .background(EditingBorder(show: activeText == idx))
+      .background(EditingBorder(mShow: b_activeIdx == mIdx))
   }
 }
 
 // 選取到的元件框框
 struct EditingBorder: View {
-  let show: Bool
+  let mShow: Bool
   var body: some View {
     RoundedRectangle(cornerRadius: 3)
       .stroke(lineWidth: 2)
-      .foregroundColor(show ? Color.red : Color.clear)
+      .foregroundColor(mShow ? Color.red : Color.clear)
   }
 }
 
 // 直線的元件 預設長度100 寬度 2
 struct PathView: View {
-  @Binding var activeIdx: Int
-  let idx: Int
-  let pathFrame: CGSize
-  let startPoint: CGPoint
-  let endPoint: CGPoint
-  let isDash: Bool
-  let dashLength: CGFloat
-  let lineWidth: CGFloat
+  @Binding var b_activeIdx: Int
+  let mIdx: Int
+  let mPathFrame: CGSize
+  let mStartPoint: CGPoint
+  let mEndPoint: CGPoint
+  let mIsDash: Bool
+  let mDashLength: CGFloat
+  let mLineWidth: CGFloat
 
   var body: some View {
     Path { path in
-      path.move(to: startPoint)
-      path.addLine(to: endPoint)
+      path.move(to: mStartPoint)
+      path.addLine(to: mEndPoint)
     }
-    .stroke(Color.black, style: StrokeStyle(lineWidth: lineWidth, dash: isDash ? [dashLength, dashLength] : [dashLength, 0]))
-    .frame(width: pathFrame.width, height: pathFrame.height)
+    .stroke(Color.black, style: StrokeStyle(lineWidth: mLineWidth, dash: mIsDash ? [mDashLength, mDashLength] : [mDashLength, 0]))
+    .frame(width: mPathFrame.width, height: mPathFrame.height)
     .onTapGesture {
-      activeIdx = idx
+      b_activeIdx = mIdx
     }
     .background(
-      EditingBorder(show: activeIdx == idx)
+      EditingBorder(mShow: b_activeIdx == mIdx)
     )
   }
 }
 
 // 長方形
 struct RectangleView: View {
-  @Binding var activeIdx: Int
-  let idx: Int
-  let lineWidth: CGFloat
-  let isDash: Bool
-  let dashLength: CGFloat
-  let rectFrame: CGSize
+  @Binding var b_activeIdx: Int
+  let mIdx: Int
+  let mLineWidth: CGFloat
+  let mIsDash: Bool
+  let mDashLength: CGFloat
+  let mRectFrame: CGSize
 
   var body: some View {
     Rectangle()
       .inset(by: 1)
-      .stroke(Color.black, style: StrokeStyle(lineWidth: lineWidth, dash: isDash ? [dashLength, dashLength] : [dashLength, 0]))
-      .frame(width: rectFrame.width, height: rectFrame.height)
+      .stroke(Color.black, style: StrokeStyle(lineWidth: mLineWidth, dash: mIsDash ? [mDashLength, mDashLength] : [mDashLength, 0]))
+      .frame(width: mRectFrame.width, height: mRectFrame.height)
       .onTapGesture {
-        self.activeIdx = self.idx
+        b_activeIdx = mIdx
       }
       .background(
-        EditingBorder(show: activeIdx == idx)
+        EditingBorder(mShow: b_activeIdx == mIdx)
       )
   }
 }
 
 // 圓角長方形
 struct RoundedRectangleView: View {
-  @Binding var activeIdx: Int
-  let idx: Int
-  let lineWidth: CGFloat
-  let isDash: Bool
-  let dashLength: CGFloat
-  let rectFrame: CGSize
-  let rectCorner: CGFloat
+  @Binding var b_activeIdx: Int
+  let mIdx: Int
+  let mLineWidth: CGFloat
+  let mIsDash: Bool
+  let mDashLength: CGFloat
+  let mRectFrame: CGSize
+  let mRectCorner: CGFloat
 
   var body: some View {
-    RoundedRectangle(cornerRadius: rectCorner)
+    RoundedRectangle(cornerRadius: mRectCorner)
       .inset(by: 1)
-      .stroke(Color.black, style: StrokeStyle(lineWidth: lineWidth, dash: isDash ? [dashLength, dashLength] : [dashLength, 0]))
-      .frame(width: rectFrame.width, height: rectFrame.height)
+      .stroke(Color.black, style: StrokeStyle(lineWidth: mLineWidth, dash: mIsDash ? [mDashLength, mDashLength] : [mDashLength, 0]))
+      .frame(width: mRectFrame.width, height: mRectFrame.height)
       .onTapGesture {
-        self.activeIdx = self.idx
+        b_activeIdx = mIdx
       }
       .background(
-        EditingBorder(show: activeIdx == idx)
+        EditingBorder(mShow: b_activeIdx == mIdx)
       )
   }
 }
 
 // 圓形
 struct CircleView: View {
-  @Binding var activeIdx: Int
-  let idx: Int
-  let lineWidth: CGFloat
-  let isDash: Bool
-  let dashLength: CGFloat
-  let circleFrame: CGSize
+  @Binding var b_activeIdx: Int
+  let mIdx: Int
+  let mLineWidth: CGFloat
+  let mIsDash: Bool
+  let mDashLength: CGFloat
+  let mCircleFrame: CGSize
 
   var body: some View {
     Circle()
       .inset(by: 1)
-      .stroke(Color.black, style: StrokeStyle(lineWidth: lineWidth, dash: isDash ? [dashLength, dashLength] : [dashLength, 0]))
-      .frame(width: circleFrame.width, height: circleFrame.height)
+      .stroke(Color.black, style: StrokeStyle(lineWidth: mLineWidth, dash: mIsDash ? [mDashLength, mDashLength] : [mDashLength, 0]))
+      .frame(width: mCircleFrame.width, height: mCircleFrame.height)
       .onTapGesture {
-        self.activeIdx = self.idx
+        b_activeIdx = mIdx
       }
       .background(
-        EditingBorder(show: activeIdx == idx)
+        EditingBorder(mShow: b_activeIdx == mIdx)
       )
   }
 }
 
 // 橢圓形
 struct OvalView: View {
-  @Binding var activeIdx: Int
-  let idx: Int
-  let lineWidth: CGFloat
-  let isDash: Bool
-  let dashLength: CGFloat
-  let ovalFrame: CGSize
+  @Binding var b_activeIdx: Int
+  let mIdx: Int
+  let mLineWidth: CGFloat
+  let mIsDash: Bool
+  let mDashLength: CGFloat
+  let mOvalFrame: CGSize
 
   var body: some View {
-    RoundedRectangle(cornerSize: CGSize(width: ovalFrame.width/2, height: ovalFrame.height/2))
+    RoundedRectangle(cornerSize: CGSize(width: mOvalFrame.width/2, height: mOvalFrame.height/2))
       .inset(by: 1)
-      .stroke(Color.black, style: StrokeStyle(lineWidth: lineWidth, dash: isDash ? [dashLength, dashLength] : [dashLength, 0]))
-      .frame(width: ovalFrame.width, height: ovalFrame.height)
+      .stroke(Color.black, style: StrokeStyle(lineWidth: mLineWidth, dash: mIsDash ? [mDashLength, mDashLength] : [mDashLength, 0]))
+      .frame(width: mOvalFrame.width, height: mOvalFrame.height)
       .onTapGesture {
-        self.activeIdx = self.idx
+        b_activeIdx = mIdx
       }
       .background(
-        EditingBorder(show: activeIdx == idx)
+        EditingBorder(mShow: b_activeIdx == mIdx)
       )
   }
 }

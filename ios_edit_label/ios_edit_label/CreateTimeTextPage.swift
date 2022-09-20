@@ -9,9 +9,9 @@
 
 import SwiftUI
 
-struct CreateTimeText: View {
+struct CreateTimeTextPage: View {
   @Environment(\.presentationMode) var pushMode
-  @Binding var finalDate: String
+  @Binding var b_finalDate: String
 
   struct TimeFormat {
     let title: String
@@ -111,7 +111,7 @@ struct CreateTimeText: View {
 //      .border(Color("LogoGreen"), width: 1)
       Button {
         // TODO: 回傳資料
-        finalDate = changeDateFormat(format: selectedFormat, inputDate: selectedDate, inputHour: selectedHour)
+        b_finalDate = changeDateFormat(format: selectedFormat, inputDate: selectedDate, inputHour: selectedHour)
 //        popBool = false
         pushMode.wrappedValue.dismiss()
       } label: {
@@ -171,9 +171,9 @@ struct CreateTimeText: View {
 
 // MARK: - Preview
 
-struct CreateTimeText_Previews: PreviewProvider {
+struct CreateTimeTextPage_Previews: PreviewProvider {
   static var previews: some View {
-    CreateTimeText(finalDate: .constant("2022-09-14 23:45"))
+    CreateTimeTextPage(b_finalDate: .constant("2022-09-14 23:45"))
       .previewDevice(PreviewDevice(rawValue: "iPhone 8"))
   }
 }

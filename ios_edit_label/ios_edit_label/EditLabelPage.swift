@@ -209,7 +209,7 @@ struct EditLabelPage: View {
                 }
               case 2: // 跳到選擇日期時間的頁面
                 NavigationLink(isActive: $mIsCreateDatePageShow) {
-                  CreateTimeText(finalDate: $mReturnTimeStr)
+                  CreateTimeTextPage(b_finalDate: $mReturnTimeStr)
                 } label: {
                   Image(systemName: mToolBarImageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
@@ -322,10 +322,10 @@ struct EditLabelPage: View {
             switch mMainComponentsArr[index].componentType {
             case ComponentTypeEnum.text.rawValue:
               // $activeIdx 代表 activeIdx 會隨 editingText變動。
-              EditingText(activeText: $mActiveIdx,
-                          label: mMainComponentsArr[index].textContent,
-                          idx: idx,
-                          underlineBool: mMainComponentsArr[index].textIsUnderline)
+              EditingText(b_activeIdx: $mActiveIdx,
+                          mLabel: mMainComponentsArr[index].textContent,
+                          mIdx: idx,
+                          mIsUnderline: mMainComponentsArr[index].textIsUnderline)
                 .background(
                   GeometryReader(content: { geometry in
                     Color.clear.onAppear {
@@ -339,19 +339,19 @@ struct EditLabelPage: View {
             // 旋轉後移動會跟著旋轉，暫無法使用
 //              .rotationEffect(.degrees(textPositions[index].degree))
             case ComponentTypeEnum.line.rawValue:
-              PathView(activeIdx: $mActiveIdx, idx: idx, pathFrame: CGSize(width: width, height: height), startPoint: pathPoint, endPoint: CGPoint(x: pathPoint.x + width, y: pathPoint.y), isDash: isDash, dashLength: 5, lineWidth: lineWidth)
+              PathView(b_activeIdx: $mActiveIdx, mIdx: idx, mPathFrame: CGSize(width: width, height: height), mStartPoint: pathPoint, mEndPoint: CGPoint(x: pathPoint.x + width, y: pathPoint.y), mIsDash: isDash, mDashLength: 5, mLineWidth: lineWidth)
                 .position(centerPoint)
             case ComponentTypeEnum.rectangle.rawValue:
-              RectangleView(activeIdx: $mActiveIdx, idx: idx, lineWidth: lineWidth, isDash: isDash, dashLength: dashLength, rectFrame: CGSize(width: width, height: height))
+              RectangleView(b_activeIdx: $mActiveIdx, mIdx: idx, mLineWidth: lineWidth, mIsDash: isDash, mDashLength: dashLength, mRectFrame: CGSize(width: width, height: height))
                 .position(centerPoint)
             case ComponentTypeEnum.roundedRectangle.rawValue:
-              RoundedRectangleView(activeIdx: $mActiveIdx, idx: idx, lineWidth: lineWidth, isDash: isDash, dashLength: dashLength, rectFrame: CGSize(width: width, height: height), rectCorner: mMainComponentsArr[index].rectCornerRadius)
+              RoundedRectangleView(b_activeIdx: $mActiveIdx, mIdx: idx, mLineWidth: lineWidth, mIsDash: isDash, mDashLength: dashLength, mRectFrame: CGSize(width: width, height: height), mRectCorner: mMainComponentsArr[index].rectCornerRadius)
                 .position(centerPoint)
             case ComponentTypeEnum.circle.rawValue:
-              CircleView(activeIdx: $mActiveIdx, idx: idx, lineWidth: lineWidth, isDash: isDash, dashLength: dashLength, circleFrame: CGSize(width: width, height: height))
+              CircleView(b_activeIdx: $mActiveIdx, mIdx: idx, mLineWidth: lineWidth, mIsDash: isDash, mDashLength: dashLength, mCircleFrame: CGSize(width: width, height: height))
                 .position(centerPoint)
             case ComponentTypeEnum.oval.rawValue:
-              OvalView(activeIdx: $mActiveIdx, idx: idx, lineWidth: lineWidth, isDash: isDash, dashLength: dashLength, ovalFrame: CGSize(width: width, height: height))
+              OvalView(b_activeIdx: $mActiveIdx, mIdx: idx, mLineWidth: lineWidth, mIsDash: isDash, mDashLength: dashLength, mOvalFrame: CGSize(width: width, height: height))
                 .position(centerPoint)
             default: EmptyView()
             }
