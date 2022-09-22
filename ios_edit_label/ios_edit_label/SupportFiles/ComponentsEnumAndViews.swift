@@ -16,6 +16,7 @@ enum ComponentTypeEnum: String {
   case roundedRectangle = "component_roundedRectangle"
   case circle = "component_circle"
   case oval = "component_oval"
+  case table = "component_table"
 }
 
 struct EditingText: View {
@@ -161,5 +162,62 @@ struct OvalView: View {
       .background(
         EditingBorder(mShow: b_activeIdx == mIdx)
       )
+  }
+}
+
+// 表格
+struct TableView: View {
+  @Binding var b_activeIdx: Int
+  // 在array的第幾個
+  @Binding var b_numbersInside: (Int, Int)
+  // 彈出視窗編輯表格文字
+  @Binding var b_isPopover: Bool
+  
+  // 序號
+  let mIdx: Int
+  // 表格內容 [橫列[直列]]
+  var mInputArr: [[String]] = [["1", "2"], ["1", "2"]]
+  // 線條粗細
+  var mLineWidth: CGFloat = 2
+  // 表格總大小
+  var mFrameWidth: CGFloat = 100
+  var mFrameHeight: CGFloat = 100
+  // 水平有幾格
+  var mHorizontalCount: Int = 2
+  // 垂直有幾格
+  var mVerticalCount: Int = 2
+
+  var body: some View {
+    VStack {
+      // 間隙為負的，要讓邊框重疊
+      HStack(spacing: -1*mLineWidth) {
+        ForEach(mInputArr.indices) { index in
+
+          VStack(spacing: -1*mLineWidth) {
+            ForEach(mInputArr[index].indices) { num in
+
+              Text("\(mInputArr[index][num])")
+                .frame(width: mFrameWidth/CGFloat(mHorizontalCount), height: mFrameHeight/CGFloat(mVerticalCount))
+                .background(
+                  Rectangle()
+                    .inset(by: 1)
+                    .stroke(Color.black, style: StrokeStyle(lineWidth: mLineWidth))
+                )
+              // 點兩下可以更改表格內容
+                .onTapGesture(count: 2, perform: {
+                  b_numbersInside = (index, num)
+                  b_isPopover = true
+                })
+            }
+          }
+        }
+      }
+    }
+    .onTapGesture {
+      b_activeIdx = mIdx
+    }
+    .background(
+      EditingBorder(mShow: b_activeIdx == mIdx)
+    )
   }
 }

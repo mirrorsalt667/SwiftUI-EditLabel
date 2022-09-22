@@ -62,7 +62,8 @@ struct CreateNewRectView: View {
             pathPoint: CGPoint(x: 0, y: 15),
             rectIsDash: false,
             rectDashLength: 5,
-            rectCornerRadius: 0)
+            rectCornerRadius: 0,
+            tableContentArr: [])
           )
         } label: {
           Image(systemName: "line.diagonal")
@@ -87,7 +88,8 @@ struct CreateNewRectView: View {
             pathPoint: CGPoint(),
             rectIsDash: false,
             rectDashLength: 5,
-            rectCornerRadius: 0)
+            rectCornerRadius: 0,
+            tableContentArr: [])
           )
         } label: {
           Rectangle()
@@ -112,7 +114,8 @@ struct CreateNewRectView: View {
             pathPoint: CGPoint(),
             rectIsDash: false,
             rectDashLength: 5,
-            rectCornerRadius: 5)
+            rectCornerRadius: 5,
+            tableContentArr: [])
           )
         } label: {
           Image(systemName: "rectangle")
@@ -136,7 +139,8 @@ struct CreateNewRectView: View {
             pathPoint: CGPoint(),
             rectIsDash: false,
             rectDashLength: 5,
-            rectCornerRadius: 0)
+            rectCornerRadius: 0,
+            tableContentArr: [])
           )
         } label: {
           Image(systemName: "circle")
@@ -162,7 +166,8 @@ struct CreateNewRectView: View {
             pathPoint: CGPoint(),
             rectIsDash: false,
             rectDashLength: 5,
-            rectCornerRadius: 0)
+            rectCornerRadius: 0,
+            tableContentArr: [])
           )
         } label: {
           Image(systemName: "oval")

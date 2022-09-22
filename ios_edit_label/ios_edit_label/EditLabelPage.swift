@@ -40,13 +40,16 @@ struct ComponentsIdxType: Codable {
 //  var rectIsBlackBackground: Bool
   // 長方形圓角
   var rectCornerRadius: CGFloat
+  // 表格
+  // 內容陣列
+  var tableContentArr: [[String]]
 }
 
 // MARK: - main View
 
 struct EditLabelPage: View {
   // 下面文字控制盤的升降
-  @State private var mTextControlShow: Bool = false
+  @State private var mTextControlShow = false
   // 文字控制盤偏移
   @State private var mTextOffsetY: CGFloat = 0
   // 螢幕長寬比
@@ -57,20 +60,25 @@ struct EditLabelPage: View {
   @State private var mMainComponentsArr = [ComponentsIdxType]()
 
   // 彈出視窗（文字更改用）
-  @State private var mIsTextPopoverShow: Bool = false
+  @State private var mIsTextPopoverShow = false
 
   // 時間
   @State private var mReturnTimeStr: String = "1"
   // 製造日期頁面的Bool
-  @State private var mIsCreateDatePageShow: Bool = false
+  @State private var mIsCreateDatePageShow = false
 
   // 新增形狀元件的頁面、位移量
-  @State private var mIsNewRectShow: Bool = false
+  @State private var mIsNewRectShow = false
   @State private var mNewRectOffsetY: CGFloat = 0
 
   // 控制盤的出現與消失
-  @State private var mIsControlShow: Bool = false
+  @State private var mIsControlShow = false
 
+  // 表格內容的指引數
+  @State private var mTableTextIndex: (Int, Int) = (0, 0)
+  // 表格內容的彈出視窗出現與否
+  @State private var mIsTablePopoverShow = false
+  
   // 畫布的寬度 距離兩邊各為9，故減18
   private var mInsideLabelWidth: CGFloat {
     UIScreen.main.bounds.width - 18
@@ -200,7 +208,8 @@ struct EditLabelPage: View {
                     pathPoint: CGPoint(),
                     rectIsDash: false,
                     rectDashLength: 0,
-                    rectCornerRadius: 0
+                    rectCornerRadius: 0,
+                    tableContentArr: []
                   ))
                 } label: {
                   Image(systemName: mToolBarImageNameArray[idxNum])
@@ -232,11 +241,14 @@ struct EditLabelPage: View {
                                         pathPoint: CGPoint(),
                                         rectIsDash: false,
                                         rectDashLength: 0,
-                                        rectCornerRadius: 0)
+                                        rectCornerRadius: 0,
+                                        tableContentArr: []
+                                       )
                     )
                     mReturnTimeStr = "1"
                   }
                 }
+              // 加入新的形狀
               case 3:
                 Button {
                   mIsNewRectShow.toggle()
@@ -245,9 +257,35 @@ struct EditLabelPage: View {
                     .font(.system(size: 40, weight: .medium, design: .rounded))
                     .foregroundColor(.white)
                 }
+              // 形狀設定的控制
               case 4:
                 Button {
                   mIsControlShow.toggle()
+                } label: {
+                  Image(systemName: mToolBarImageNameArray[idxNum])
+                    .font(.system(size: 40, weight: .medium, design: .rounded))
+                    .foregroundColor(.white)
+                }
+              // 加入新的表格
+              case 5:
+                Button {
+                  mMainComponentsArr.append(ComponentsIdxType(idx: mMainComponentsArr.count,
+                                                              componentType: ComponentTypeEnum.table.rawValue,
+                                                              point: CGPoint(x: mInsideLabelWidth/2, y: insideHeight/2),
+                                                              frameSize: CGSize(width: 100, height: 100),
+                                                              degree: 0,
+                                                              textContent: "",
+                                                              textSize: 0,
+                                                              textIsBold: false,
+                                                              textIsItalic: false,
+                                                              textIsUnderline: false,
+                                                              rectLineWidth: 2,
+                                                              pathPoint: CGPoint(),
+                                                              rectIsDash: false,
+                                                              rectDashLength: 5,
+                                                              rectCornerRadius: 0,
+                                                              tableContentArr: [["", ""], ["", ""], ["", ""], ]))
+                  print("新增表格", mMainComponentsArr)
                 } label: {
                   Image(systemName: mToolBarImageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
@@ -352,6 +390,10 @@ struct EditLabelPage: View {
                 .position(centerPoint)
             case ComponentTypeEnum.oval.rawValue:
               OvalView(b_activeIdx: $mActiveIdx, mIdx: idx, mLineWidth: lineWidth, mIsDash: isDash, mDashLength: dashLength, mOvalFrame: CGSize(width: width, height: height))
+                .position(centerPoint)
+            case ComponentTypeEnum.table.rawValue:
+              let tableStrArr = mMainComponentsArr[idx].tableContentArr
+              TableView(b_activeIdx: $mActiveIdx, b_numbersInside: $mTableTextIndex, b_isPopover: $mIsTablePopoverShow, mIdx: idx, mInputArr: tableStrArr, mLineWidth: lineWidth, mFrameWidth: width, mFrameHeight: height, mHorizontalCount: tableStrArr.count, mVerticalCount: tableStrArr[0].count)
                 .position(centerPoint)
             default: EmptyView()
             }
