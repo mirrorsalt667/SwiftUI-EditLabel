@@ -49,7 +49,7 @@ struct ComponentsIdxType: Codable {
 
 struct EditLabelPage: View {
   // 下面文字控制盤的升降
-  @State private var mTextControlShow = false
+  @State private var mIsTextControlShow = false
   // 文字控制盤偏移
   @State private var mTextOffsetY: CGFloat = 0
   // 螢幕長寬比
@@ -68,17 +68,19 @@ struct EditLabelPage: View {
   @State private var mIsCreateDatePageShow = false
 
   // 新增形狀元件的頁面、位移量
-  @State private var mIsNewRectShow = false
+  @State private var mIsCreateRectShow = false
   @State private var mNewRectOffsetY: CGFloat = 0
 
   // 控制盤的出現與消失
-  @State private var mIsControlShow = false
+  @State private var mIsRectControlShow = false
 
   // 表格內容的指引數
   @State private var mTableTextIndex: (Int, Int) = (0, 0)
   // 表格內容的彈出視窗出現與否
   @State private var mIsTablePopoverShow = false
-  
+  @State private var mIsTableControlShow = false
+  @State private var mTableViewOneText = ""
+
   // 畫布的寬度 距離兩邊各為9，故減18
   private var mInsideLabelWidth: CGFloat {
     UIScreen.main.bounds.width - 18
@@ -86,6 +88,17 @@ struct EditLabelPage: View {
 
   // 下方工具列的圖片名稱
   private let mToolBarImageNameArray: [String] = ["list.bullet.rectangle", "t.square", "clock", "rectangle", "lineweight", "tablecells", "barcode", "qrcode", "photo"]
+
+  //
+  private enum IsViewShowEnum: String {
+    case textControl = "text_control_show"
+    case textPopover = "text_popover_show"
+    case datePickerPopover = "date_popover_show"
+    case rectCreate = "rect_create_show"
+    case rectControl = "rect_control_show"
+    case tableTextPopover = "table_text_popover_show"
+    case tableControl = "table_control_show"
+  }
 
   // MARK: - BODY
 
@@ -134,10 +147,21 @@ struct EditLabelPage: View {
       }
       .padding()
 
-      ControlComponentsView(b_isShow: $mIsControlShow, b_componentsArr: $mMainComponentsArr, mActiveIdx: mActiveIdx)
-        .opacity(mIsControlShow ? 1 : 0)
+      // 控制圖形形狀的設定
+      ControlComponentsView(b_isShow: $mIsRectControlShow,
+                            b_componentsArr: $mMainComponentsArr,
+                            mActiveIdx: mActiveIdx)
+        .opacity(mIsRectControlShow ? 1 : 0)
 
-      Color.black
+      // 控制表格的設定
+      TableSettingView(b_isShow: $mIsTableControlShow,
+                       b_componentsArr: $mMainComponentsArr,
+                       mActiveIdx: mActiveIdx,
+                       mHorizontalAmount: mActiveIdx >= 0 ? CGFloat(mMainComponentsArr[mActiveIdx].tableContentArr.count):3,
+                       mVerticalAmount: mActiveIdx >= 0 ? CGFloat(mMainComponentsArr[mActiveIdx].tableContentArr[0].count):2)
+        .opacity(mIsTableControlShow ? 1 : 0)
+
+      Color.black.frame(maxHeight: .infinity)
 
       // 功能列( 橫向捲動 )
       ZStack {
@@ -147,7 +171,7 @@ struct EditLabelPage: View {
         // 11pro -> 44.0
         // 11pro max -> 44.0
         // 控制盤的上升下降
-        if mTextControlShow {
+        if mIsTextControlShow {
           thisIsAView()
             .onAppear {
               withAnimation(.linear(duration: 0.4)) {
@@ -163,15 +187,15 @@ struct EditLabelPage: View {
             }
         }
 
-        if mIsNewRectShow {
-          CreateNewRectView(b_isShowing: $mIsNewRectShow, b_componentsArr: $mMainComponentsArr, mOffsetY: mNewRectOffsetY)
+        if mIsCreateRectShow {
+          CreateNewRectView(b_isShowing: $mIsCreateRectShow, b_componentsArr: $mMainComponentsArr, mOffsetY: mNewRectOffsetY)
             .onAppear {
               withAnimation(.linear(duration: 0.4)) {
                 mNewRectOffsetY = 0
               }
             }
         } else {
-          CreateNewRectView(b_isShowing: $mIsNewRectShow, b_componentsArr: $mMainComponentsArr, mOffsetY: mNewRectOffsetY)
+          CreateNewRectView(b_isShowing: $mIsCreateRectShow, b_componentsArr: $mMainComponentsArr, mOffsetY: mNewRectOffsetY)
             .onAppear {
               withAnimation(.linear(duration: 0.2)) {
                 mNewRectOffsetY = 120
@@ -185,7 +209,13 @@ struct EditLabelPage: View {
               switch idxNum {
               case 0: // 控制盤上下移
                 Button {
-                  mTextControlShow.toggle()
+                  if mIsTextControlShow {
+                    mIsTextControlShow = false
+                  } else if mActiveIdx >= 0 {
+                    if mMainComponentsArr[mActiveIdx].componentType == ComponentTypeEnum.text.rawValue {
+                      turnEverythingFalseButOne(trueOne: IsViewShowEnum.textControl.rawValue)
+                    }
+                  }
                 } label: {
                   Image(systemName: mToolBarImageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
@@ -209,7 +239,7 @@ struct EditLabelPage: View {
                     rectIsDash: false,
                     rectDashLength: 0,
                     rectCornerRadius: 0,
-                    tableContentArr: []
+                    tableContentArr: [[""]]
                   ))
                 } label: {
                   Image(systemName: mToolBarImageNameArray[idxNum])
@@ -242,7 +272,7 @@ struct EditLabelPage: View {
                                         rectIsDash: false,
                                         rectDashLength: 0,
                                         rectCornerRadius: 0,
-                                        tableContentArr: []
+                                        tableContentArr: [[""]]
                                        )
                     )
                     mReturnTimeStr = "1"
@@ -251,7 +281,7 @@ struct EditLabelPage: View {
               // 加入新的形狀
               case 3:
                 Button {
-                  mIsNewRectShow.toggle()
+                  turnEverythingFalseButOne(trueOne: IsViewShowEnum.rectCreate.rawValue)
                 } label: {
                   Image(systemName: mToolBarImageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
@@ -260,7 +290,16 @@ struct EditLabelPage: View {
               // 形狀設定的控制
               case 4:
                 Button {
-                  mIsControlShow.toggle()
+                  if mActiveIdx >= 0 {
+                    if mMainComponentsArr[mActiveIdx].componentType == ComponentTypeEnum.line.rawValue
+                      || mMainComponentsArr[mActiveIdx].componentType == ComponentTypeEnum.rectangle.rawValue
+                      || mMainComponentsArr[mActiveIdx].componentType == ComponentTypeEnum.roundedRectangle.rawValue
+                      || mMainComponentsArr[mActiveIdx].componentType == ComponentTypeEnum.circle.rawValue
+                      || mMainComponentsArr[mActiveIdx].componentType == ComponentTypeEnum.oval.rawValue
+                    {
+                      turnEverythingFalseButOne(trueOne: IsViewShowEnum.rectControl.rawValue)
+                    }
+                  }
                 } label: {
                   Image(systemName: mToolBarImageNameArray[idxNum])
                     .font(.system(size: 40, weight: .medium, design: .rounded))
@@ -271,11 +310,11 @@ struct EditLabelPage: View {
                 Button {
                   mMainComponentsArr.append(ComponentsIdxType(idx: mMainComponentsArr.count,
                                                               componentType: ComponentTypeEnum.table.rawValue,
-                                                              point: CGPoint(x: mInsideLabelWidth/2, y: insideHeight/2),
-                                                              frameSize: CGSize(width: 100, height: 100),
+                                                              point: CGPoint(x: mInsideLabelWidth / 2, y: insideHeight / 2),
+                                                              frameSize: CGSize(width: 100, height: 60),
                                                               degree: 0,
                                                               textContent: "",
-                                                              textSize: 0,
+                                                              textSize: 15,
                                                               textIsBold: false,
                                                               textIsItalic: false,
                                                               textIsUnderline: false,
@@ -284,7 +323,7 @@ struct EditLabelPage: View {
                                                               rectIsDash: false,
                                                               rectDashLength: 5,
                                                               rectCornerRadius: 0,
-                                                              tableContentArr: [["", ""], ["", ""], ["", ""], ]))
+                                                              tableContentArr: [["", ""], ["", ""], ["", ""]]))
                   print("新增表格", mMainComponentsArr)
                 } label: {
                   Image(systemName: mToolBarImageNameArray[idxNum])
@@ -334,6 +373,76 @@ struct EditLabelPage: View {
       }
     }
     return 0
+  }
+
+  // 打開一個視窗，關掉其他的。
+  private func turnEverythingFalseButOne(trueOne: String) {
+    switch trueOne {
+    case IsViewShowEnum.textControl.rawValue:
+      mIsTextControlShow.toggle()
+//      mIsTextControlShow = false
+      mIsTextPopoverShow = false
+      mIsCreateDatePageShow = false
+      mIsCreateRectShow = false
+      mIsRectControlShow = false
+      mIsTablePopoverShow = false
+      mIsTableControlShow = false
+    case IsViewShowEnum.textPopover.rawValue:
+      mIsTextPopoverShow.toggle()
+//      mIsTextControlShow = false
+//      mIsTextPopoverShow = false
+      mIsCreateDatePageShow = false
+      mIsCreateRectShow = false
+      mIsRectControlShow = false
+      mIsTablePopoverShow = false
+      mIsTableControlShow = false
+    case IsViewShowEnum.datePickerPopover.rawValue:
+      mIsCreateDatePageShow.toggle()
+      mIsTextControlShow = false
+      mIsTextPopoverShow = false
+//      mIsCreateDatePageShow = false
+      mIsCreateRectShow = false
+      mIsRectControlShow = false
+      mIsTablePopoverShow = false
+      mIsTableControlShow = false
+    case IsViewShowEnum.rectCreate.rawValue:
+      mIsCreateRectShow.toggle()
+      mIsTextControlShow = false
+      mIsTextPopoverShow = false
+      mIsCreateDatePageShow = false
+//      mIsCreateRectShow = false
+      mIsRectControlShow = false
+      mIsTablePopoverShow = false
+      mIsTableControlShow = false
+    case IsViewShowEnum.rectControl.rawValue:
+      mIsRectControlShow.toggle()
+      mIsTextControlShow = false
+      mIsTextPopoverShow = false
+      mIsCreateDatePageShow = false
+      mIsCreateRectShow = false
+//      mIsRectControlShow = false
+      mIsTablePopoverShow = false
+      mIsTableControlShow = false
+    case IsViewShowEnum.tableTextPopover.rawValue:
+      mIsTablePopoverShow.toggle()
+      mIsTextControlShow = false
+      mIsTextPopoverShow = false
+      mIsCreateDatePageShow = false
+      mIsCreateRectShow = false
+      mIsRectControlShow = false
+//      mIsTablePopoverShow = false
+      mIsTableControlShow = false
+    case IsViewShowEnum.tableControl.rawValue:
+      mIsTableControlShow.toggle()
+      mIsTextControlShow = false
+      mIsTextPopoverShow = false
+      mIsCreateDatePageShow = false
+      mIsCreateRectShow = false
+      mIsRectControlShow = false
+      mIsTablePopoverShow = false
+//      mIsTableControlShow = false
+    default: break
+    }
   }
 
   // MARK: - ViewBuilder
@@ -393,8 +502,44 @@ struct EditLabelPage: View {
                 .position(centerPoint)
             case ComponentTypeEnum.table.rawValue:
               let tableStrArr = mMainComponentsArr[idx].tableContentArr
-              TableView(b_activeIdx: $mActiveIdx, b_numbersInside: $mTableTextIndex, b_isPopover: $mIsTablePopoverShow, mIdx: idx, mInputArr: tableStrArr, mLineWidth: lineWidth, mFrameWidth: width, mFrameHeight: height, mHorizontalCount: tableStrArr.count, mVerticalCount: tableStrArr[0].count)
-                .position(centerPoint)
+              VStack {
+                TableView(b_activeIdx: $mActiveIdx, b_numbersInside: $mTableTextIndex, b_isPopover: $mIsTablePopoverShow, b_isControlViewShow: $mIsTableControlShow, mIdx: idx, mInputArr: tableStrArr, mLineWidth: lineWidth, mFrameWidth: width, mFrameHeight: height, mHorizontalCount: tableStrArr.count, mVerticalCount: tableStrArr[0].count, mTextSize: mMainComponentsArr[index].textSize)
+                  .position(centerPoint)
+                Button {} label: {
+                  Text("修改文字")
+                }
+                .hidden()
+                .popover(isPresented: $mIsTablePopoverShow) {
+                  VStack(spacing: 0) {
+                    Spacer()
+                    HStack {
+                      Color.black.frame(width: 20)
+                      TextField("表格內容", text: $mTableViewOneText)
+                        .cornerRadius(5)
+                        .background(Color.white)
+                        .onDisappear {
+                          mMainComponentsArr[mActiveIdx].tableContentArr[mTableTextIndex.0][mTableTextIndex.1] = mTableViewOneText
+                          mTableViewOneText = ""
+                        }
+                      Color.black.frame(width: 20)
+                    }
+                    Button {
+                      mIsTablePopoverShow = false
+                    } label: {
+                      Text("確認")
+                        .frame(width: 80, height: 40)
+                        .background(
+                          RoundedRectangle(cornerRadius: 5)
+                            .inset(by: 1)
+                            .stroke(style: StrokeStyle(lineWidth: 2))
+                        )
+                    }
+                    Color.black.frame(maxHeight: .infinity)
+                  }
+                  .background(Color.black)
+                  .edgesIgnoringSafeArea(.all)
+                }
+              }
             default: EmptyView()
             }
           }
@@ -419,7 +564,9 @@ struct EditLabelPage: View {
               print(horizontalAmount < 0 ? "left swipe" : "right swipe")
             } else {
               print(verticalAmount < 0 ? "up swipe" : "down swipe")
-              mTextControlShow = verticalAmount < 0
+              if verticalAmount > 0 {
+                mIsTextControlShow = false
+              }
             }
           })
       Text("Setting")
@@ -474,7 +621,7 @@ struct EditLabelPage: View {
             .frame(width: 35, height: 35)
         }
         Button {
-          mIsTextPopoverShow = true
+          turnEverythingFalseButOne(trueOne: IsViewShowEnum.textPopover.rawValue)
         } label: {
           Image(systemName: "pencil.circle")
             .font(.system(size: 30))
@@ -490,7 +637,7 @@ struct EditLabelPage: View {
                 .textFieldStyle(.roundedBorder)
             }
             Button {
-              mIsTextPopoverShow = false
+              turnEverythingFalseButOne(trueOne: IsViewShowEnum.textPopover.rawValue)
             } label: {
               Text("確認")
             }

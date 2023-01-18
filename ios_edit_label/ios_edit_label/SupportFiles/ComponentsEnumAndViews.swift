@@ -172,6 +172,8 @@ struct TableView: View {
   @Binding var b_numbersInside: (Int, Int)
   // 彈出視窗編輯表格文字
   @Binding var b_isPopover: Bool
+  // 彈出設定的視窗
+  @Binding var b_isControlViewShow: Bool
   
   // 序號
   let mIdx: Int
@@ -186,28 +188,35 @@ struct TableView: View {
   var mHorizontalCount: Int = 2
   // 垂直有幾格
   var mVerticalCount: Int = 2
+  // 文字大小
+  var mTextSize: CGFloat = 15
 
   var body: some View {
     VStack {
       // 間隙為負的，要讓邊框重疊
       HStack(spacing: -1*mLineWidth) {
-        ForEach(mInputArr.indices) { index in
+        ForEach(mInputArr.indices, id: \.self) { index in
 
           VStack(spacing: -1*mLineWidth) {
-            ForEach(mInputArr[index].indices) { num in
+            ForEach(mInputArr[index].indices, id: \.self) { num in
 
               Text("\(mInputArr[index][num])")
                 .frame(width: mFrameWidth/CGFloat(mHorizontalCount), height: mFrameHeight/CGFloat(mVerticalCount))
+                .font(Font.system(size: mTextSize))
                 .background(
                   Rectangle()
                     .inset(by: 1)
                     .stroke(Color.black, style: StrokeStyle(lineWidth: mLineWidth))
                 )
-              // 點兩下可以更改表格內容
-                .onTapGesture(count: 2, perform: {
-                  b_numbersInside = (index, num)
-                  b_isPopover = true
-                })
+                .overlay(
+                  Color.gray
+                    .opacity(0.01)
+                  // 點兩下可以更改表格內容
+                    .onTapGesture(count: 2, perform: {
+                      b_numbersInside = (index, num)
+                      b_isPopover = true
+                    })
+                )
             }
           }
         }
@@ -215,6 +224,7 @@ struct TableView: View {
     }
     .onTapGesture {
       b_activeIdx = mIdx
+      b_isControlViewShow = true
     }
     .background(
       EditingBorder(mShow: b_activeIdx == mIdx)
